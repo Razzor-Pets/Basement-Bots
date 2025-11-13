@@ -1,0 +1,17 @@
+{
+  "name": "bot",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node ./ding-dong/client.js"
+  },
+  "dependencies": {
+    "discloud": "^1.5.1",
+    "discord.js": "^14.24.2",
+    "dotenv": "^17.2.3"
+  }
+}
