@@ -4,9 +4,6 @@ const commands = require("./commandOptions");
 const { Client, GatewayIntentBits, Partials, Events, ActivityType } = require("discord.js"); 
 const { discloud } = require("discloud");
 
-console.log(process.env.DING_DONG_TOKEN);
-
-
 // --------------- client ---------------
 
 const client = new Client({
