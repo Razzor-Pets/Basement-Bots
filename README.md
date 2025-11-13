@@ -44,7 +44,7 @@ in the discloud config file.
 
 # Bots Available
 
-- ## **Ding Dong**
+## **Ding Dong**
 
 A Simple On Demand Bot that can respond to messages for now. As per need i will add more features to it. The reasson behind it is created was the already present bots didn't have a feature to reply to embedded messages. That is to say, those bots don't read embedded messages and respond to them. 
 
