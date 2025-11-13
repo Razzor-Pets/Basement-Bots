@@ -39,6 +39,7 @@ There is not start script as it is not needed since we use discloud to host the 
 - Which file to execute for the bot to run
 - The environment variables needed for it to run
 - The script to start the bot (In our case `npm run dev`)
+in the discloud config file.
 
 
 # Bots Available
