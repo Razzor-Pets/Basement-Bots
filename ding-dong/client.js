@@ -1,8 +1,22 @@
 require("dotenv").config();
 
 const commands = require("./commandOptions");
-const { Client, GatewayIntentBits, Partials, Events, ActivityType } = require("discord.js"); 
+const {
+    Client, GatewayIntentBits, Partials, Events, ActivityType,  // existing ones
+    ContextMenuCommandBuilder,  // ← NEW
+    ApplicationCommandType,     // ← NEW
+    ModalBuilder,
+    TextInputBuilder,
+    TextInputStyle,
+    ActionRowBuilder,
+    ChannelType
+} = require("discord.js");
 const { discloud } = require("discloud");
+const ding = require("./interactions/testInteraction");
+const setPresence = require("./interactions/setPresence");
+const testMessage = require("./messages/testMessage");
+const pokemonSpawn = require("./messages/pokemonSpawn");
+const moveBelow = require("./interactions/moveBelow");
 
 // --------------- client ---------------
 
@@ -21,23 +35,23 @@ const client = new Client({
 
 // --------------- events ---------------
 
-client.once(Events.ClientReady, async (c) => {;
-    c.user.setActivity("Playing with Ding Dong Balls", { type: ActivityType.Playing});
-    
+client.once(Events.ClientReady, async (c) => {
+    c.user.setActivity("Playing with Ding Dong Balls", { type: ActivityType.Playing });
+
     const channel = await c.channels.fetch(process.env.BOT_TEST_CHANNEL);
 
     const guild = await c.guilds.fetch(process.env.BASEMENT_ID);
 
-    const version = "1.0.0";
+    const version = "1.1.0(t)";
 
     await guild.commands.set(commands).catch((e) => {
         console.log(e);
     });
-    
-    if(channel) {
-        channel.send("Ding Dong is online! v: " + version);
 
-        if(guild){
+    if (channel) {
+        channel.send("Ding Dong is online! v: " + version + " " + new Date().toLocaleString());
+
+        if (guild) {
             channel.send("Guild found");
         }
 
@@ -50,16 +64,16 @@ client.once(Events.ClientReady, async (c) => {;
 // --------------- login ---------------
 
 
-async function login() {
-    try {
-        await discloud.login(process.env.DING_DONG_TOKEN);
-        console.log("Logged in as " + client.user.tag + "!");
-    } catch (e) {
-        console.log("Discloud login failed: " + e);
-    }
-}
+// async function login() {
+//     try {
+//         await discloud.login(process.env.DING_DONG_TOKEN);
+//         console.log("Logged in as " + client.user.tag + "!");
+//     } catch (e) {
+//         console.log("Discloud login failed: " + e);
+//     }
+// }
 
-login();
+// login();
 
 client.login(process.env.DING_DONG_TOKEN).then(() => {
     console.log("Logged in as " + client.user.tag + "!");
@@ -72,53 +86,23 @@ client.login(process.env.DING_DONG_TOKEN).then(() => {
 
 client.on("interactionCreate", async (interaction) => {
 
-    if(!interaction.isCommand()) return;
+    if (!interaction.isCommand() && !interaction.isContextMenuCommand() && !interaction.isModalSubmit() && !interaction.isButton() && !interaction.isAnySelectMenu()) return;
 
-    if(interaction.commandName == "setpresence") {
-            if(interaction.options.getString("presence") == null) {
-                interaction.reply("Please provide a presence").catch((e) => {
-                    console.log(e);
-                });
-                return;
-        } else {
-            client.user.setActivity(interaction.options.getString("presence"), { type: ActivityType.Playing});
-            interaction.reply("Presence set to " + interaction.options.getString("presence")).catch((e) => {
-                console.log(e);
-            });
-        }
+    setPresence(interaction, client);
 
-    }
+    ding(interaction);
 
-    if(interaction.commandName == "ding") {
-        interaction.reply("dong").catch((e) => {
-            console.log(e);
-        });
-    }
+    moveBelow(interaction, client);
+
 });
 
 
 // --------------- message ---------------
 
 client.on(Events.MessageCreate, async (message) => {
-    console.log(message.content);
 
-    if(message.content == "!ding") {
-        message.reply("dong").catch((e) => {
-            console.log(e);
-        });
-    }
+    testMessage(message);
 
-    if(message.embeds.length > 0) {
-        if(message.embeds[0].title == "A wild pokémon has appeared!" && message.channel.id == process.env.POKEMON_SPAWN_CHANNEL) {
-            const reply = await message.reply( process.env.POKEMON_PING_ROLE + " Quick! A wild pokemon has appeared! Did you catch it?").catch((e) => {
-                console.log(e);
-            });
-            reply.react("✅").catch((e) => {
-                console.log(e);
-            });
-            reply.react("❌").catch((e) => {
-                console.log(e);
-            });
-        }
-    }
+    pokemonSpawn(message);
+
 });
