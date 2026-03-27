@@ -17,6 +17,8 @@ const setPresence = require("./interactions/setPresence");
 const testMessage = require("./messages/testMessage");
 const pokemonSpawn = require("./messages/pokemonSpawn");
 const moveBelow = require("./interactions/moveBelow");
+const moveAbove = require("./interactions/moveAbove");
+const moveThis = require("./interactions/moveThis");
 
 // --------------- client ---------------
 
@@ -30,6 +32,9 @@ const client = new Client({
         GatewayIntentBits.DirectMessages,
     ],
     partials: [Partials.Message, Partials.Channel],
+    rest: {
+        timeout: 120000
+    }
 });
 
 
@@ -64,16 +69,16 @@ client.once(Events.ClientReady, async (c) => {
 // --------------- login ---------------
 
 
-// async function login() {
-//     try {
-//         await discloud.login(process.env.DING_DONG_TOKEN);
-//         console.log("Logged in as " + client.user.tag + "!");
-//     } catch (e) {
-//         console.log("Discloud login failed: " + e);
-//     }
-// }
+async function login() {
+    try {
+        await discloud.login(process.env.DING_DONG_TOKEN);
+        console.log("Logged in as " + client.user.tag + "!");
+    } catch (e) {
+        console.log("Discloud login failed: " + e);
+    }
+}
 
-// login();
+login();
 
 client.login(process.env.DING_DONG_TOKEN).then(() => {
     console.log("Logged in as " + client.user.tag + "!");
@@ -93,6 +98,10 @@ client.on("interactionCreate", async (interaction) => {
     ding(interaction);
 
     moveBelow(interaction, client);
+
+    moveAbove(interaction, client);
+
+    moveThis(interaction, client);
 
 });
 

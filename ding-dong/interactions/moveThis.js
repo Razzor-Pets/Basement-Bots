@@ -1,15 +1,15 @@
 const { ModalBuilder, TextInputBuilder, ActionRowBuilder, TextInputStyle, ChannelType } = require("discord.js");
 const sendMessage = require("./components/sendMessage");
 
-const moveBelow = async (interaction, client) => {
+const moveThis = async (interaction, client) => {
 
-    if (interaction.commandName === "Move_everything_below_this") {
+    if (interaction.commandName === "Move_this") {
 
         const targetMessage = interaction.targetMessage;
 
         const modal = new ModalBuilder()
-            .setCustomId(`move-modal-below-${targetMessage.channel.id}-${targetMessage.id}`)
-            .setTitle("Move messages below this one");
+            .setCustomId(`move-modal-this-${targetMessage.channel.id}-${targetMessage.id}`)
+            .setTitle("Move this message");
 
         const textInput1 = new TextInputBuilder()
             .setCustomId("target-channel")
@@ -39,7 +39,7 @@ const moveBelow = async (interaction, client) => {
 
     }
 
-    if (interaction.isModalSubmit() && interaction.customId.startsWith("move-modal-below-")) {
+    if (interaction.isModalSubmit() && interaction.customId.startsWith("move-modal-this-")) {
         await interaction.deferReply({ ephemeral: true });
 
         try {
@@ -96,7 +96,7 @@ const moveBelow = async (interaction, client) => {
             }
 
             const messageToMove = [targetMessage];
-            let afterId = targetMessage.id;
+            let beforeId = targetMessage.id;
             let pages = 0;
 
             if (thread) {
@@ -104,26 +104,6 @@ const moveBelow = async (interaction, client) => {
             } else {
                 await interaction.editReply(`I'm going to move messages from ${sourceChannel.name} to ${destChannel.name}`);
             }
-
-            try {
-                while (pages < 100) {
-                    const batch = await sourceChannel.messages.fetch({ after: afterId, limit: 100 });
-
-                    if (batch.size == 0) break;
-
-                    messageToMove.push(...batch.values());
-                    afterId = batch.first().id;
-                    pages++;
-
-                }
-
-            } catch (error) {
-                console.log(error);
-                await interaction.editReply("An error occurred while fetching messages" + error.message);
-                return;
-            }
-
-            messageToMove.sort((a, b) => BigInt(a.id) - BigInt(b.id) > 0n ? 1 : -1);
 
             interaction.editReply(`Starting Message: ${messageToMove[0].id} | Ending Message: ${messageToMove[messageToMove.length - 1].id} | Total Messages: ${messageToMove.length}`)
 
@@ -144,5 +124,5 @@ const moveBelow = async (interaction, client) => {
 
 }
 
-module.exports = moveBelow;
+module.exports = moveThis;
 

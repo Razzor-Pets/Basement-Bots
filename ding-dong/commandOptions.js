@@ -5,6 +5,7 @@ const commands = [];
 commands.push(new SlashCommandBuilder()
     .setName('set_presence')                    // lowercase, no spaces
     .setDescription('Set the bot\'s presence')
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .addStringOption(option =>
         option
             .setName('presence')

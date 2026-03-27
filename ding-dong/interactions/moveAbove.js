@@ -1,15 +1,15 @@
 const { ModalBuilder, TextInputBuilder, ActionRowBuilder, TextInputStyle, ChannelType } = require("discord.js");
 const sendMessage = require("./components/sendMessage");
 
-const moveBelow = async (interaction, client) => {
+const moveAbove = async (interaction, client) => {
 
-    if (interaction.commandName === "Move_everything_below_this") {
+    if (interaction.commandName === "Move_everything_above_this") {
 
         const targetMessage = interaction.targetMessage;
 
         const modal = new ModalBuilder()
-            .setCustomId(`move-modal-below-${targetMessage.channel.id}-${targetMessage.id}`)
-            .setTitle("Move messages below this one");
+            .setCustomId(`move-modal-above-${targetMessage.channel.id}-${targetMessage.id}`)
+            .setTitle("Move messages above this one");
 
         const textInput1 = new TextInputBuilder()
             .setCustomId("target-channel")
@@ -39,7 +39,7 @@ const moveBelow = async (interaction, client) => {
 
     }
 
-    if (interaction.isModalSubmit() && interaction.customId.startsWith("move-modal-below-")) {
+    if (interaction.isModalSubmit() && interaction.customId.startsWith("move-modal-above-")) {
         await interaction.deferReply({ ephemeral: true });
 
         try {
@@ -96,7 +96,7 @@ const moveBelow = async (interaction, client) => {
             }
 
             const messageToMove = [targetMessage];
-            let afterId = targetMessage.id;
+            let beforeId = targetMessage.id;
             let pages = 0;
 
             if (thread) {
@@ -107,12 +107,12 @@ const moveBelow = async (interaction, client) => {
 
             try {
                 while (pages < 100) {
-                    const batch = await sourceChannel.messages.fetch({ after: afterId, limit: 100 });
+                    const batch = await sourceChannel.messages.fetch({ before: beforeId, limit: 100 });
 
                     if (batch.size == 0) break;
 
                     messageToMove.push(...batch.values());
-                    afterId = batch.first().id;
+                    beforeId = batch.last().id;
                     pages++;
 
                 }
@@ -144,5 +144,5 @@ const moveBelow = async (interaction, client) => {
 
 }
 
-module.exports = moveBelow;
+module.exports = moveAbove;
 
